@@ -203,8 +203,7 @@ render: |
               type: writesingle
               decode: uint16
         {{- else }}
-        - source: error
-          error: ErrNotAvailable
+        {{ warn "maxdischargepower is not set in the config" }}
         {{- end }}
     - case: 2 # hold
       set:
@@ -271,8 +270,7 @@ render: |
               type: writesingle
               decode: uint16
         {{- else }}
-        - source: error
-          error: ErrNotAvailable
+        {{ warn "maxchargepower is not set in the config" }}
         {{- end }}
   capacity: {{ .capacity }} # kWh
   maxchargepower: {{ .maxchargepower }} # W
