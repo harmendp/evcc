@@ -24,11 +24,8 @@ params:
   - name: maxsoc
     advanced: true
   - name: maxchargepower
-    default: 5000
     advanced: true
-    required: true
   - name: maxdischargepower
-    default: 5000
     advanced: true
 render: |
   type: custom
@@ -185,29 +182,6 @@ render: |
               address: 13050 # Charge/discharge command
               type: writesingle
               decode: uint16
-        # Reset max battery discharge power, set equal to max battery charge power
-        - source: go
-          script: power
-          in:
-          - name: power
-            type: int
-            config:
-              source: modbus
-              {{- include "modbus" . | indent 12 }}
-              register:
-                address: 33046 # Battery max charge power
-                type: holding
-                decode: uint16
-          out:
-          - name: power
-            type: int
-            config:
-              source: modbus
-              {{- include "modbus" . | indent 12 }}
-              register:
-                address: 33047 # Battery max discharge power
-                type: writesingle
-                decode: uint16
         - source: const
           value: 0 # Self-consumption mode (Default)
           set:
@@ -217,6 +191,21 @@ render: |
               address: 13049 # EMS mode selection
               type: writesingle
               decode: uint16
+        # Reset max battery discharge power, set equal to max battery charge power
+        {{- if .maxdischargepower }}
+        - source: const
+          value: {{ div .maxdischargepower 10 }}
+          set:
+            source: modbus
+            {{- include "modbus" . | indent 10 }}
+            register:
+              address: 13051 # Battery max forced (dis)charge power
+              type: writesingle
+              decode: uint16
+        {{- else }}
+        - source: error
+          error: ErrNotAvailable
+        {{- end }}    
     - case: 2 # hold
       set:
         source: sequence
@@ -271,6 +260,7 @@ render: |
               address: 13050 # Charge/discharge command
               type: writesingle
               decode: uint16
+        {{- if .maxchargepower }}
         - source: const
           value: {{ .maxchargepower }}
           set:
@@ -280,6 +270,10 @@ render: |
               address: 13051 # Battery max forced (dis)charge power
               type: writesingle
               decode: uint16
+        {{- else }}
+        - source: error
+          error: ErrNotAvailable
+        {{- end }}    
   capacity: {{ .capacity }} # kWh
   maxchargepower: {{ .maxchargepower }} # W
   maxdischargepower: {{ .maxdischargepower }} # W
