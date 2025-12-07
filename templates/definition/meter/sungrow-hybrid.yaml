@@ -204,8 +204,8 @@ render: |
               decode: uint16
         {{- else }}
         - source: error
-          error: ErrNotAvailable
-        {{- end }}    
+          error: api.ErrNotAvailable
+        {{- end }}
     - case: 2 # hold
       set:
         source: sequence
@@ -272,8 +272,8 @@ render: |
               decode: uint16
         {{- else }}
         - source: error
-          error: ErrNotAvailable
-        {{- end }}    
+          error: api.ErrNotAvailable
+        {{- end }}
   capacity: {{ .capacity }} # kWh
   maxchargepower: {{ .maxchargepower }} # W
   maxdischargepower: {{ .maxdischargepower }} # W
