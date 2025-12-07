@@ -204,7 +204,7 @@ render: |
               decode: uint16
         {{- else }}
         - source: error
-          error: api.ErrNotAvailable
+          error: ErrNotAvailable
         {{- end }}
     - case: 2 # hold
       set:
@@ -272,7 +272,7 @@ render: |
               decode: uint16
         {{- else }}
         - source: error
-          error: api.ErrNotAvailable
+          error: ErrNotAvailable
         {{- end }}
   capacity: {{ .capacity }} # kWh
   maxchargepower: {{ .maxchargepower }} # W
